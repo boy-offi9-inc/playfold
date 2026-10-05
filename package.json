@@ -90,6 +90,7 @@
     }
   },
   "devDependencies": {
+    "@types/node": "^22.20.5",
     "@types/react": "^18.3.0",
     "playwright": "^1.48.0",
     "react": "^18.3.0",
