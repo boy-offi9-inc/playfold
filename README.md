@@ -1,3 +1,5 @@
+<h1 align="center">Playfold</h1>
+
 <p align="center">
   <a href="https://www.npmjs.com/package/@boy-offi9-inc/playfold"><img src="https://img.shields.io/npm/v/%40boy-offi9-inc%2Fplayfold?style=flat-square&label=npm" alt="npm version"></a>
   <a href="https://github.com/boy-offi9-inc/playfold/actions"><img src="https://img.shields.io/github/actions/workflow/status/boy-offi9-inc/playfold/ci.yml?style=flat-square&label=CI" alt="CI"></a>
@@ -5,8 +7,6 @@
   <img src="https://img.shields.io/badge/TypeScript-ready-3178C6?style=flat-square" alt="TypeScript">
   <a href="LICENSE"><img src="https://img.shields.io/github/license/boy-offi9-inc/playfold?style=flat-square" alt="MIT License"></a>
 </p>
-
-<h1 align="center">Playfold</h1>
 
 <p align="center">
   <strong>Tiny media embeds. Simple control.</strong><br>
