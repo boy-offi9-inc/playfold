@@ -1,10 +1,10 @@
 <h1 align="center">Playfold</h1>
 <p align="center">
-  <a href="https://www.npmjs.com/package/@boy-offi9-inc/playfold"><img src="https://img.shields.io/npm/v/%40boy-offi9-inc%2Fplayfold?style=flat-square&label=npm" alt="npm version"></a>
-  <a href="https://github.com/boy-offi9-inc/playfold/actions"><img src="https://img.shields.io/github/actions/workflow/status/boy-offi9-inc/playfold/ci.yml?style=flat-square&label=CI" alt="CI"></a>
+  <a href="https://www.npmjs.com/package/@boy-offi9-inc/Playfold"><img src="https://img.shields.io/npm/v/%40boy-offi9-inc%2Fplayfold?style=flat-square&label=npm" alt="npm version"></a>
+  <a href="https://github.com/boy-offi9-inc/Playfold/actions"><img src="https://img.shields.io/github/actions/workflow/status/boy-offi9-inc/Playfold/ci.yml?style=flat-square&label=CI" alt="CI"></a>
   <img src="https://img.shields.io/badge/dependencies-0-44cc11?style=flat-square" alt="Zero dependencies">
   <img src="https://img.shields.io/badge/TypeScript-ready-3178C6?style=flat-square" alt="TypeScript">
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/boy-offi9-inc/playfold?style=flat-square" alt="MIT License"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/boy-offi9-inc/Playfold?style=flat-square" alt="MIT License"></a>
 </p>
 
 <p align="center">
