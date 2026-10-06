@@ -61,11 +61,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/boy-offi9-inc/playfold.git"
+    "url": "git+https://github.com/boy-offi9-inc/Playfold.git"
   },
-  "homepage": "https://github.com/boy-offi9-inc/playfold#readme",
+  "homepage": "https://github.com/boy-offi9-inc/Playfold#readme",
   "bugs": {
-    "url": "https://github.com/boy-offi9-inc/playfold/issues"
+    "url": "https://github.com/boy-offi9-inc/Playfold/issues"
   },
   "publishConfig": {
     "access": "public"
