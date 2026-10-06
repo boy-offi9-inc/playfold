@@ -41,13 +41,13 @@ You provide the player page and the media. Playfold does not include a media bac
 ## Install
 
 ```bash
-npm install @boy-offi9-inc/playfold
+npm install @boy-offi9-inc/Playfold
 ```
 
 Or load the script-tag build (pin the version in production):
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@boy-offi9-inc/playfold@0.1.0/dist/playfold.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@boy-offi9-inc/Playfold@0.1.0/dist/playfold.global.js"></script>
 ```
 
 The script exposes a global `Playfold` object (`createPlayer`, `configure`, `scan`, `connectHost`, `version`) and mounts `[data-playfold]` elements on page load.
@@ -65,7 +65,7 @@ The script exposes a global `Playfold` object (`createPlayer`, `configure`, `sca
   <a href="https://player.example.com/embed/track/42">Listen</a>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@boy-offi9-inc/playfold@0.1.0/dist/playfold.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@boy-offi9-inc/Playfold@0.1.0/dist/playfold.global.js"></script>
 ```
 
 With JavaScript, the element's content is replaced by the player. Without it, the link stays as a fallback.
@@ -73,7 +73,7 @@ With JavaScript, the element's content is replaced by the player. Without it, th
 ### JavaScript / TypeScript
 
 ```ts
-import { configure, createPlayer } from '@boy-offi9-inc/playfold';
+import { configure, createPlayer } from '@boy-offi9-inc/Playfold';
 
 configure({ baseUrl: 'https://player.example.com', height: 152 });
 
@@ -96,7 +96,7 @@ await player.seek(30);
 React 17 or newer is an optional peer dependency.
 
 ```tsx
-import { PlayfoldPlayer } from '@boy-offi9-inc/playfold/react';
+import { PlayfoldPlayer } from '@boy-offi9-inc/Playfold/react';
 
 export function Player() {
   return (
@@ -116,7 +116,7 @@ Pass a `ref` to call `play()`, `pause()`, `seek()`, `setVolume()` and `getState(
 Call `connectHost` on the page that is loaded inside the iframe.
 
 ```ts
-import { connectHost } from '@boy-offi9-inc/playfold/host';
+import { connectHost } from '@boy-offi9-inc/Playfold/host';
 
 const connection = connectHost(document.querySelector('audio')!, {
   allowedOrigins: ['https://example.com'], // default: '*'
@@ -132,7 +132,7 @@ For a media element, Playfold announces `ready`, forwards `play`, `pause`, `ende
 Anything that is not a media element can implement `HostAdapter`:
 
 ```ts
-import { connectHost, type HostAdapter } from '@boy-offi9-inc/playfold/host';
+import { connectHost, type HostAdapter } from '@boy-offi9-inc/Playfold/host';
 
 const adapter: HostAdapter = {
   play: () => customPlayer.play(),
@@ -236,10 +236,10 @@ Content-Security-Policy: frame-ancestors https://example.com
 
 | Import | Purpose |
 | --- | --- |
-| `@boy-offi9-inc/playfold` | Client |
-| `@boy-offi9-inc/playfold/host` | Player page host |
-| `@boy-offi9-inc/playfold/react` | React component |
-| `@boy-offi9-inc/playfold/browser` | Script-tag build |
+| `@boy-offi9-inc/Playfold` | Client |
+| `@boy-offi9-inc/Playfold/host` | Player page host |
+| `@boy-offi9-inc/Playfold/react` | React component |
+| `@boy-offi9-inc/Playfold/browser` | Script-tag build |
 
 ## Scope
 
@@ -250,7 +250,7 @@ It was inspired by the public APIs of the Vimeo Player API, the YouTube IFrame A
 ## Development
 
 ```bash
-git clone https://github.com/boy-offi9-inc/playfold.git
+git clone https://github.com/boy-offi9-inc/Playfold.git
 cd playfold
 npm install
 npm run typecheck
