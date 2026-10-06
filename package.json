@@ -1,6 +1,6 @@
 {
-  "name": "@boy-offi9-inc/Playfold",
-  "version": "0.1.0",
+  "name": "@boy-offi9-inc/playfold",
+  "version": "1.0.0",
   "description": "Tiny, framework-agnostic SDK for embedding media players in an iframe and controlling them through a typed, promise-based API.",
   "keywords": [
     "embed",

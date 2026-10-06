@@ -1,33 +1,31 @@
-<h1 align="center">Playfold</h1>
+<h1 align="center">playfold</h1>
 <p align="center">
-  <a href="https://www.npmjs.com/package/@boy-offi9-inc/Playfold"><img src="https://img.shields.io/npm/v/%40boy-offi9-inc%2Fplayfold?style=flat-square&label=npm" alt="npm version"></a>
-  <a href="https://github.com/boy-offi9-inc/Playfold/actions"><img src="https://img.shields.io/github/actions/workflow/status/boy-offi9-inc/Playfold/ci.yml?style=flat-square&label=CI" alt="CI"></a>
+  <a href="https://www.npmjs.com/package/@boy-offi9-inc/playfold"><img src="https://img.shields.io/npm/v/%40boy-offi9-inc%2Fplayfold?style=flat-square&label=npm" alt="npm version"></a>
+  <a href="https://github.com/boy-offi9-inc/playfold/actions"><img src="https://img.shields.io/github/actions/workflow/status/boy-offi9-inc/playfold/ci.yml?style=flat-square&label=CI" alt="CI"></a>
   <img src="https://img.shields.io/badge/dependencies-0-44cc11?style=flat-square" alt="Zero dependencies">
   <img src="https://img.shields.io/badge/TypeScript-ready-3178C6?style=flat-square" alt="TypeScript">
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/boy-offi9-inc/Playfold?style=flat-square" alt="MIT License"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/boy-offi9-inc/playfold?style=flat-square" alt="MIT License"></a>
 </p>
-
 <p align="center">
   <strong>Tiny media embeds. Simple control.</strong><br>
   A framework-agnostic SDK for embedding a media player in an iframe and controlling it through a typed, promise-based API.
 </p>
-
 ---
 
-## What is Playfold?
+## What is playfold?
 
-Playfold connects a page that embeds a player with the player page itself. A thin client and host layer sits on top of an iframe and `postMessage`, so your site gets a simple API for media served from another page.
+playfold connects a page that embeds a player with the player page itself. A thin client and host layer sits on top of an iframe and `postMessage`, so your site gets a simple API for media served from another page.
 
 ```
  Your site                               Player page (iframe)
 ┌─────────────────────┐                 ┌──────────────────────┐
-│  Playfold client    │  ── command ──▶ │  Playfold host       │
+│  playfold client    │  ── command ──▶ │  playfold host       │
 │  player.play()      │  ◀─ response ── │  <audio> / <video>   │
 │  player.on('ended') │  ◀── event ──── │  or a custom player  │
 └─────────────────────┘   postMessage   └──────────────────────┘
 ```
 
-You provide the player page and the media. Playfold does not include a media backend, storage, transcoding or a hosted player.
+You provide the player page and the media. playfold does not include a media backend, storage, transcoding or a hosted player.
 
 ## Features
 
@@ -41,16 +39,16 @@ You provide the player page and the media. Playfold does not include a media bac
 ## Install
 
 ```bash
-npm install @boy-offi9-inc/Playfold
+npm install @boy-offi9-inc/playfold
 ```
 
 Or load the script-tag build (pin the version in production):
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@boy-offi9-inc/Playfold@0.1.0/dist/playfold.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@boy-offi9-inc/playfold@1.0.0/dist/playfold.global.js"></script>
 ```
 
-The script exposes a global `Playfold` object (`createPlayer`, `configure`, `scan`, `connectHost`, `version`) and mounts `[data-playfold]` elements on page load.
+The script exposes a global `playfold` object (`createPlayer`, `configure`, `scan`, `connectHost`, `version`) and mounts `[data-playfold]` elements on page load.
 
 ## Quick start
 
@@ -65,7 +63,7 @@ The script exposes a global `Playfold` object (`createPlayer`, `configure`, `sca
   <a href="https://player.example.com/embed/track/42">Listen</a>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@boy-offi9-inc/Playfold@0.1.0/dist/playfold.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@boy-offi9-inc/playfold@1.0.0/dist/playfold.global.js"></script>
 ```
 
 With JavaScript, the element's content is replaced by the player. Without it, the link stays as a fallback.
@@ -73,7 +71,7 @@ With JavaScript, the element's content is replaced by the player. Without it, th
 ### JavaScript / TypeScript
 
 ```ts
-import { configure, createPlayer } from '@boy-offi9-inc/Playfold';
+import { configure, createPlayer } from '@boy-offi9-inc/playfold';
 
 configure({ baseUrl: 'https://player.example.com', height: 152 });
 
@@ -96,11 +94,11 @@ await player.seek(30);
 React 17 or newer is an optional peer dependency.
 
 ```tsx
-import { PlayfoldPlayer } from '@boy-offi9-inc/Playfold/react';
+import { playfoldPlayer } from '@boy-offi9-inc/playfold/react';
 
 export function Player() {
   return (
-    <PlayfoldPlayer
+    <playfoldPlayer
       baseUrl="https://player.example.com"
       path="/embed/track/42"
       onEnded={() => next()}
@@ -116,7 +114,7 @@ Pass a `ref` to call `play()`, `pause()`, `seek()`, `setVolume()` and `getState(
 Call `connectHost` on the page that is loaded inside the iframe.
 
 ```ts
-import { connectHost } from '@boy-offi9-inc/Playfold/host';
+import { connectHost } from '@boy-offi9-inc/playfold/host';
 
 const connection = connectHost(document.querySelector('audio')!, {
   allowedOrigins: ['https://example.com'], // default: '*'
@@ -125,14 +123,14 @@ const connection = connectHost(document.querySelector('audio')!, {
 // later: connection.destroy();
 ```
 
-For a media element, Playfold announces `ready`, forwards `play`, `pause`, `ended`, `timeupdate` (throttled to 250 ms), `durationchange`, `volumechange` and `error`, and handles all commands.
+For a media element, playfold announces `ready`, forwards `play`, `pause`, `ended`, `timeupdate` (throttled to 250 ms), `durationchange`, `volumechange` and `error`, and handles all commands.
 
 ### Custom players
 
 Anything that is not a media element can implement `HostAdapter`:
 
 ```ts
-import { connectHost, type HostAdapter } from '@boy-offi9-inc/Playfold/host';
+import { connectHost, type HostAdapter } from '@boy-offi9-inc/playfold/host';
 
 const adapter: HostAdapter = {
   play: () => customPlayer.play(),
@@ -195,7 +193,7 @@ For declarative use, options map to `data-base-url`, `data-width`, `data-height`
 
 ## Protocol
 
-Playfold speaks a small versioned `postMessage` protocol, so any page that implements it can be controlled, with or without this SDK.
+playfold speaks a small versioned `postMessage` protocol, so any page that implements it can be controlled, with or without this SDK.
 
 ```jsonc
 // client → player page
@@ -236,21 +234,21 @@ Content-Security-Policy: frame-ancestors https://example.com
 
 | Import | Purpose |
 | --- | --- |
-| `@boy-offi9-inc/Playfold` | Client |
-| `@boy-offi9-inc/Playfold/host` | Player page host |
-| `@boy-offi9-inc/Playfold/react` | React component |
-| `@boy-offi9-inc/Playfold/browser` | Script-tag build |
+| `@boy-offi9-inc/playfold` | Client |
+| `@boy-offi9-inc/playfold/host` | Player page host |
+| `@boy-offi9-inc/playfold/react` | React component |
+| `@boy-offi9-inc/playfold/browser` | Script-tag build |
 
 ## Scope
 
-Playfold stays small on purpose. It is not a hosting service, transcoder, CDN, analytics tool or player UI framework.
+playfold stays small on purpose. It is not a hosting service, transcoder, CDN, analytics tool or player UI framework.
 
 It was inspired by the public APIs of the Vimeo Player API, the YouTube IFrame API, the SoundCloud Widget API and the Spotify iFrame API. The implementation, protocol and naming are original.
 
 ## Development
 
 ```bash
-git clone https://github.com/boy-offi9-inc/Playfold.git
+git clone https://github.com/boy-offi9-inc/playfold.git
 cd playfold
 npm install
 npm run typecheck
