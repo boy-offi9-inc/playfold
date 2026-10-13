@@ -1,7 +1,7 @@
 {
   "name": "@boy-offi9-inc/playfold",
-  "version": "1.0.0",
-  "description": "Tiny, framework-agnostic SDK for embedding media players in an iframe and controlling them through a typed, promise-based API.",
+  "version": "1.1.0",
+  "description": "Tiny, framework-agnostic SDK for embedding media players in an iframe and controlling them through a typed, promise-based API. Includes server-side link-preview helpers (Open Graph, Twitter, oEmbed) and a crawler checker.",
   "keywords": [
     "embed",
     "iframe",
@@ -10,7 +10,13 @@
     "video",
     "postmessage",
     "oembed",
-    "sdk"
+    "sdk",
+    "opengraph",
+    "link-preview",
+    "unfurl",
+    "telegram",
+    "whatsapp",
+    "discord"
   ],
   "license": "MIT",
   "type": "module",
@@ -39,6 +45,26 @@
       "require": {
         "types": "./dist/host.d.cts",
         "default": "./dist/host.cjs"
+      }
+    },
+    "./meta": {
+      "import": {
+        "types": "./dist/meta.d.ts",
+        "default": "./dist/meta.js"
+      },
+      "require": {
+        "types": "./dist/meta.d.cts",
+        "default": "./dist/meta.cjs"
+      }
+    },
+    "./check": {
+      "import": {
+        "types": "./dist/check.d.ts",
+        "default": "./dist/check.js"
+      },
+      "require": {
+        "types": "./dist/check.d.cts",
+        "default": "./dist/check.cjs"
       }
     },
     "./react": {
@@ -97,5 +123,8 @@
     "tsup": "^8.3.0",
     "typescript": "^5.6.0",
     "vitest": "^2.1.0"
+  },
+  "bin": {
+    "playfold-check": "./dist/cli.js"
   }
 }
