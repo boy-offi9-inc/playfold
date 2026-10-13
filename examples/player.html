@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Playfold player</title>
+<style>html,body{margin:0;background:transparent}</style>
+</head>
+<body>
+<div id="player"></div>
+<!-- Host this page, then point Playfold's `path` at it, e.g. /player.html?src=https://cdn.example.com/a.mp3&title=Song -->
+<script src="../dist/playfold-ui.global.js"></script>
+<script>
+  // allowedSrcOrigins stops this page from being used to play anyone else's files.
+  PlayfoldUI.mountPlayer('#player', {
+    ...PlayfoldUI.readParams(),
+    allowedSrcOrigins: [location.origin, 'https://cdn.example.com'],
+  });
+</script>
+</body>
+</html>
