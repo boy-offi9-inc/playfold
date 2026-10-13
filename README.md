@@ -95,11 +95,11 @@ await player.seek(30);
 React 17 or newer is an optional peer dependency.
 
 ```tsx
-import { playfoldPlayer } from '@boy-offi9-inc/playfold/react';
+import { PlayfoldPlayer } from '@boy-offi9-inc/playfold/react';
 
 export function Player() {
   return (
-    <playfoldPlayer
+    <PlayfoldPlayer
       baseUrl="https://player.example.com"
       path="/embed/track/42"
       onEnded={() => next()}
@@ -231,6 +231,59 @@ Content-Security-Policy: frame-ancestors https://example.com
 
 `allowedOrigins` limits who can control the player, and `frame-ancestors` limits who can embed it. Use both when you need both.
 
+## Link previews
+
+When someone pastes your link into WhatsApp, Telegram, Discord, Slack or X, the platform's **server** fetches the URL and reads the `<meta>` tags in the raw HTML. It never runs JavaScript, so a client-rendered page shows a blank card. `@boy-offi9-inc/playfold/meta` generates the tags, an oEmbed response and a request handler. It runs on the server and has no dependencies.
+
+```ts
+import express from 'express';
+import { createMetaHandler } from '@boy-offi9-inc/playfold/meta';
+
+const app = express();
+
+app.use(
+  createMetaHandler({
+    origin: 'https://music.example.com',
+    siteName: 'Example Music',
+    crawlersOnly: true, // browsers fall through to your app
+    resolve: async (url) => {
+      const track = await db.tracks.findBySlug(url.pathname.split('/').pop()!);
+      if (!track) return null;
+      return {
+        title: track.title,
+        url: url.href,
+        description: `${track.artist} on Example Music`,
+        image: { url: track.coverUrl, width: 600, height: 600 },
+        audio: track.mp3Url, // direct file: best chance of native inline playback
+        playerUrl: `https://music.example.com/embed/${track.id}`, // your Playfold player page
+        author: track.artist,
+        duration: track.seconds,
+      };
+    },
+  }),
+);
+```
+
+The handler serves the tags to crawlers, serves oEmbed JSON at `/oembed` (with the discovery `<link>` added for you), and calls `next()` for browsers and unknown pages. It also works with Node's `http` module. For other frameworks, use `getMetaTags(track)`, `renderMetaTags(track)`, `renderMetaPage(track)` and `buildOEmbed(track)` directly.
+
+### What to expect from platforms
+
+Tags only *offer* a player. Each platform decides whether to show it, and for iframe players it generally limits that to providers it has integrated. A new site with perfect tags usually gets a rich card, not an inline player.
+
+- A **direct audio or video file** (`audio` / `video`) has the best chance of playing inline on platforms that support it.
+- An **iframe player** (`playerUrl`) is offered through `og:video` (`text/html`) and `twitter:player`. It works where the platform allows it.
+- **WhatsApp** shows a static card. Keep the image small, ideally under about 300 KB.
+
+Behavior changes over time, so test each platform with a real link.
+
+### Check a link
+
+```bash
+npx playfold-check https://music.example.com/track/42
+```
+
+The checker fetches the page as the Telegram, WhatsApp, Discord, X, Facebook and Slack crawlers do, then reports missing or relative tags, non-https media, oversized images, servers without range requests, and player pages that block framing. It exits with code 1 when it finds an error, so you can use it in CI. In code: `import { checkUrl } from '@boy-offi9-inc/playfold/check'`.
+
 ## Entry points
 
 | Import | Purpose |
@@ -238,6 +291,8 @@ Content-Security-Policy: frame-ancestors https://example.com
 | `@boy-offi9-inc/playfold` | Client |
 | `@boy-offi9-inc/playfold/host` | Player page host |
 | `@boy-offi9-inc/playfold/react` | React component |
+| `@boy-offi9-inc/playfold/meta` | Server-side link-preview tags, oEmbed and request handler |
+| `@boy-offi9-inc/playfold/check` | Link-preview checker (also the `playfold-check` command) |
 | `@boy-offi9-inc/playfold/browser` | Script-tag build |
 
 ## Scope
