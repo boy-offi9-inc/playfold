@@ -284,6 +284,37 @@ npx playfold-check https://music.example.com/track/42
 
 The checker fetches the page as the Telegram, WhatsApp, Discord, X, Facebook and Slack crawlers do, then reports missing or relative tags, non-https media, oversized images, servers without range requests, and player pages that block framing. It exits with code 1 when it finds an error, so you can use it in CI. In code: `import { checkUrl } from '@boy-offi9-inc/playfold/check'`.
 
+## Default player UI
+
+You can build your own player page, or use the optional one. `@boy-offi9-inc/playfold/ui` builds an accessible audio or video card inside the page you embed, and connects it to the host for you, so the Playfold client controls it with no extra code.
+
+```ts
+import { mountPlayer } from '@boy-offi9-inc/playfold/ui';
+
+mountPlayer('#app', {
+  src: 'https://cdn.example.com/track.mp3',
+  title: 'Night Drive',
+  subtitle: 'Artist',
+  eyebrow: 'Example Music', // small label above the title
+  poster: 'https://cdn.example.com/cover.jpg',
+  accent: '#f97316',
+  theme: 'dark', // 'dark' | 'light' | 'auto'
+});
+```
+
+For a page without a bundler, load `dist/playfold-ui.global.js` and call `PlayfoldUI.mountPlayer(...)`. `examples/player.html` is a complete player page that reads `?src=&title=&theme=` from its URL.
+
+What you get: a play/pause button, a seek bar with elapsed and total time, mute, and full screen for video. The controls are real buttons and a range input, so keyboard and screen readers work. Arrow keys skip 5 seconds, Home and End jump to the ends, and lock-screen controls use the Media Session API where the browser supports it. Titles and other text are inserted as text, never as HTML.
+
+**Theming.** Set CSS variables on `.pf-root` from your own stylesheet: `--pf-accent`, `--pf-on-accent`, `--pf-bg`, `--pf-fg`, `--pf-muted`, `--pf-track`, `--pf-radius` and `--pf-font`. All text can be translated with the `labels` option.
+
+**Security.**
+- If you read `src` or `poster` from the URL, set `allowedSrcOrigins`. Otherwise anyone can use your player page to play any file.
+- Only `http(s)` URLs are accepted.
+- The UI injects one `<style>`. On a page with a strict Content Security Policy, pass `nonce`, or ship the exported `playerCss` as a normal stylesheet.
+
+The host connects automatically when the page is inside an iframe. Pass `host: false` to skip it, or `host: { allowedOrigins: [...] }` to restrict which sites may control the player.
+
 ## Entry points
 
 | Import | Purpose |
@@ -293,11 +324,12 @@ The checker fetches the page as the Telegram, WhatsApp, Discord, X, Facebook and
 | `@boy-offi9-inc/playfold/react` | React component |
 | `@boy-offi9-inc/playfold/meta` | Server-side link-preview tags, oEmbed and request handler |
 | `@boy-offi9-inc/playfold/check` | Link-preview checker (also the `playfold-check` command) |
+| `@boy-offi9-inc/playfold/ui` | Optional default player UI for the player page |
 | `@boy-offi9-inc/playfold/browser` | Script-tag build |
 
 ## Scope
 
-playfold stays small on purpose. It is not a hosting service, transcoder, CDN, analytics tool or player UI framework.
+playfold stays small on purpose. It is not a hosting service, transcoder, CDN, analytics tool or player UI framework. The default player UI is a small optional extra, not a framework: use it, restyle it with CSS variables, or ignore it.
 
 It was inspired by the public APIs of the Vimeo Player API, the YouTube IFrame API, the SoundCloud Widget API and the Spotify iFrame API. The implementation, protocol and naming are original.
 
@@ -314,4 +346,6 @@ npm run test:e2e
 npm run build
 ```
 
-## Powered by Boy Offi9
+## License
+
+[MIT](LICENSE) © Boy Offi9 Inc.
