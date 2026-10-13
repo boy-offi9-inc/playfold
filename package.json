@@ -1,6 +1,6 @@
 {
   "name": "@boy-offi9-inc/playfold",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Tiny, framework-agnostic SDK for embedding media players in an iframe and controlling them through a typed, promise-based API. Includes server-side link-preview helpers (Open Graph, Twitter, oEmbed) and a crawler checker.",
   "keywords": [
     "embed",
@@ -16,7 +16,9 @@
     "unfurl",
     "telegram",
     "whatsapp",
-    "discord"
+    "discord",
+    "player-ui",
+    "audio-player"
   ],
   "license": "MIT",
   "type": "module",
@@ -67,6 +69,16 @@
         "default": "./dist/check.cjs"
       }
     },
+    "./ui": {
+      "import": {
+        "types": "./dist/ui.d.ts",
+        "default": "./dist/ui.js"
+      },
+      "require": {
+        "types": "./dist/ui.d.cts",
+        "default": "./dist/ui.cjs"
+      }
+    },
     "./react": {
       "import": {
         "types": "./dist/react.d.ts",
@@ -103,7 +115,7 @@
     "build": "rm -rf dist && tsup",
     "dev": "tsup --watch",
     "test": "vitest run",
-    "test:e2e": "npm run build && node test/e2e.mjs",
+    "test:e2e": "npm run build && node test/e2e.mjs && node test/ui.e2e.mjs",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run typecheck && npm test && npm run build"
   },
