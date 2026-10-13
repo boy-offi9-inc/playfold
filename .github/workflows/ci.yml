@@ -17,3 +17,4 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: node test/e2e.mjs
+      - run: node test/ui.e2e.mjs
