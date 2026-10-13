@@ -2,7 +2,7 @@ import { defineConfig } from 'tsup';
 
 export default defineConfig([
   {
-    entry: { index: 'src/index.ts', host: 'src/host.ts', react: 'src/react.ts', meta: 'src/meta.ts', check: 'src/check.ts' },
+    entry: { index: 'src/index.ts', host: 'src/host.ts', react: 'src/react.ts', meta: 'src/meta.ts', check: 'src/check.ts', ui: 'src/ui.ts' },
     format: ['esm', 'cjs'],
     dts: true,
     sourcemap: true,
@@ -16,7 +16,7 @@ export default defineConfig([
     platform: 'node',
   },
   {
-    entry: { playfold: 'src/browser.ts' },
+    entry: { playfold: 'src/browser.ts', 'playfold-ui': 'src/browser-ui.ts' },
     format: ['iife'],
     minify: true,
     target: 'es2018',
