@@ -302,7 +302,13 @@ mountPlayer('#app', {
 });
 ```
 
-For a page without a bundler, load `dist/playfold-ui.global.js` and call `PlayfoldUI.mountPlayer(...)`. `examples/player.html` is a complete player page that reads `?src=&title=&theme=` from its URL.
+For a page without a bundler, load the script and call `PlayfoldUI.mountPlayer(...)`:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@boy-offi9-inc/playfold@1.2.1/dist/playfold-ui.global.js"></script>
+```
+
+ `examples/player.html` is a complete player page that reads `?src=&title=&theme=` from its URL. It only accepts media from its own origin until you add your media host to `MEDIA_ORIGINS`.
 
 What you get: a play/pause button, a seek bar with elapsed and total time, mute, and full screen for video. The controls are real buttons and a range input, so keyboard and screen readers work. Arrow keys skip 5 seconds, Home and End jump to the ends, and lock-screen controls use the Media Session API where the browser supports it. Titles and other text are inserted as text, never as HTML.
 

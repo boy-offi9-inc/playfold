@@ -97,7 +97,7 @@ describe('checkUrl', () => {
       fetch: (async () => new Response('<html><head></head><body><div id="root"></div></body></html>')) as typeof fetch,
     });
     expect(report.ok).toBe(false);
-    expect(report.findings.map((f) => f.message).join('\n')).toContain('Single-page apps');
+    expect(report.findings.map((f) => f.message).join('\n')).toContain('single-page app');
   });
   it('rejects non-http urls', async () => {
     await expect(checkUrl('ftp://x')).rejects.toThrow(/absolute/);

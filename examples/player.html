@@ -8,14 +8,19 @@
 </head>
 <body>
 <div id="player"></div>
-<!-- Host this page, then point Playfold's `path` at it, e.g. /player.html?src=https://cdn.example.com/a.mp3&title=Song -->
-<script src="../dist/playfold-ui.global.js"></script>
+<!--
+  Host this page, then point Playfold's `path` at it, for example:
+    /player.html?src=https://media.example.com/a.mp3&title=Song&subtitle=Artist
+  Working from a clone of the repo? Run `npm run build` and load ../dist/playfold-ui.global.js instead.
+-->
+<script src="https://cdn.jsdelivr.net/npm/@boy-offi9-inc/playfold@1.2.1/dist/playfold-ui.global.js"></script>
 <script>
-  // allowedSrcOrigins stops this page from being used to play anyone else's files.
-  PlayfoldUI.mountPlayer('#player', {
-    ...PlayfoldUI.readParams(),
-    allowedSrcOrigins: [location.origin, 'https://cdn.example.com'],
-  });
+  // Which sites may supply the media and cover URLs. This stops the page from being used to play
+  // anyone else's files. Same origin only by default: add your media host to the list, for example
+  // 'https://media.example.com'.
+  var MEDIA_ORIGINS = [location.origin];
+
+  PlayfoldUI.mountPlayer('#player', Object.assign(PlayfoldUI.readParams(), { allowedSrcOrigins: MEDIA_ORIGINS }));
 </script>
 </body>
 </html>

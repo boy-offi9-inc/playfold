@@ -261,7 +261,7 @@ export async function checkUrl(url: string, options: CheckOptions = {}): Promise
     if (!first(tags, 'og:title') && pages.every((p) => !first(p.parsed, 'og:title'))) {
       findings.push({
         level: 'info',
-        message: 'Tags must be in the first HTML response. Single-page apps that add them with JavaScript show blank cards.',
+        message: 'No Open Graph tags in the first HTML response. Crawlers do not run JavaScript, so tags added by a single-page app are invisible to them.',
       });
     }
     findings.push(...(await checkAssets(f, tags, timeoutMs)));

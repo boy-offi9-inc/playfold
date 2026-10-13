@@ -23,6 +23,10 @@ function wav(seconds = 6, rate = 8000) {
 }
 const audio = wav();
 
+const exampleSource = readFileSync(fileURLToPath(new URL('../examples/player.html', import.meta.url)), 'utf8');
+const example = exampleSource.replace(/https:\/\/cdn\.jsdelivr\.net\/[^"]*playfold-ui\.global\.js/, '/ui.js');
+assert.notEqual(example, exampleSource, 'example page should load the UI from the CDN');
+
 const PLAYER_PORT = 4202;
 const HOST_PORT = 4201;
 const PLAYER_ORIGIN = `http://127.0.0.1:${PLAYER_PORT}`;
@@ -42,6 +46,7 @@ const playerServer = http.createServer((req, res) => {
       .writeHead(206, { 'content-type': 'audio/wav', 'accept-ranges': 'bytes', 'content-range': `bytes ${start}-${end}/${audio.length}`, 'content-length': end - start + 1 })
       .end(audio.subarray(start, end + 1));
   }
+  if (url.pathname === '/example') return res.writeHead(200, { 'content-type': 'text/html' }).end(example);
   if (url.pathname === '/player') {
     const theme = url.searchParams.get('theme') || 'dark';
     const src = url.searchParams.get('src') || '/a.wav';
@@ -159,6 +164,18 @@ try {
   const injected = await page.frames()[1].evaluate(() => window.__pwned === undefined);
   assert.equal(injected, true);
   console.log('ok  markup in the title never executed');
+
+  // 10. the shipped example page works, and only accepts media from its own origin
+  const ex = await browser.newPage({ viewport: { width: 390, height: 200 } });
+  await ex.goto(`${PLAYER_ORIGIN}/example?src=/a.wav&title=Example`);
+  await ex.locator('.pf-title').waitFor();
+  assert.equal(await ex.locator('.pf-title').textContent(), 'Example');
+  const foreign = await browser.newPage({ viewport: { width: 390, height: 200 } });
+  foreign.on('pageerror', () => undefined);
+  await foreign.goto(`${PLAYER_ORIGIN}/example?src=${encodeURIComponent('https://evil.test/x.mp3')}`);
+  await foreign.waitForTimeout(300);
+  assert.equal(await foreign.locator('.pf-root').count(), 0);
+  console.log('ok  examples/player.html mounts, and refuses media from other origins');
 
   // screenshot in the light theme at a narrow width
   const light = await browser.newPage({ viewport: { width: 320, height: 170 } });
