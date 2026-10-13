@@ -314,6 +314,4 @@ npm run test:e2e
 npm run build
 ```
 
-## License
-
-[MIT](LICENSE) © Boy Offi9 Inc.
+## Powered by Boy Offi9
