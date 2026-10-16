@@ -305,14 +305,29 @@ mountPlayer('#app', {
 For a page without a bundler, load the script and call `PlayfoldUI.mountPlayer(...)`:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@boy-offi9-inc/playfold@1.2.1/dist/playfold-ui.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@boy-offi9-inc/playfold@1.2.2/dist/playfold-ui.global.js"></script>
 ```
 
  `examples/player.html` is a complete player page that reads `?src=&title=&theme=` from its URL. It only accepts media from its own origin until you add your media host to `MEDIA_ORIGINS`.
 
 What you get: a play/pause button, a seek bar with elapsed and total time, mute, and full screen for video. The controls are real buttons and a range input, so keyboard and screen readers work. Arrow keys skip 5 seconds, Home and End jump to the ends, and lock-screen controls use the Media Session API where the browser supports it. Titles and other text are inserted as text, never as HTML.
 
-**Theming.** Set CSS variables on `.pf-root` from your own stylesheet: `--pf-accent`, `--pf-on-accent`, `--pf-bg`, `--pf-fg`, `--pf-muted`, `--pf-track`, `--pf-radius` and `--pf-font`. All text can be translated with the `labels` option.
+**Colors.** Pass `accent` for a quick brand color, or `colors` for more control:
+
+```ts
+mountPlayer('#app', {
+  src,
+  colors: { accent: '#16a34a', background: '#052e16', text: '#ecfdf5', muted: '#86efac' },
+});
+```
+
+You only need to give the colors you care about. The play-button icon, the small label and the seek bar are worked out from `accent` so they stay readable: a very dark accent gets a white icon and a lightened label, a bright one gets a dark icon. Pass `onAccent`, `accentText` or `accentUi` only to pin an exact value. Values that are not valid CSS colors are ignored. On a hosted player page, `?accent=16a34a&bg=052e16&fg=ecfdf5` does the same (the `#` is optional).
+
+`background` and `text` are a pair: if you set a light `background`, set a dark `text` too, or use `theme: 'light'`.
+
+You can also set `--pf-bg`, `--pf-fg`, `--pf-muted`, `--pf-track`, `--pf-radius`, `--pf-font` and `--pf-max-h` (the tallest a video may be, default `70vh`) on `.pf-root` from your own stylesheet. All text can be translated with the `labels` option.
+
+**Video.** The video box follows the real picture, so a portrait clip is shown tall instead of with black bars, up to `--pf-max-h`. When the player sits in an iframe, make the iframe tall enough for a portrait video plus the controls. The controls are built to ignore global `button` and `input` styles on the page.
 
 **Security.**
 - If you read `src` or `poster` from the URL, set `allowedSrcOrigins`. Otherwise anyone can use your player page to play any file.
