@@ -33,19 +33,23 @@ const PLAYER_ORIGIN = `http://127.0.0.1:${PLAYER_PORT}`;
 const HOST_ORIGIN = `http://127.0.0.1:${HOST_PORT}`;
 const TITLE = 'Night <img src=x onerror=window.__pwned=1> Drive';
 
+// Chromium only allows seeking when the server honours Range requests.
+function ranged(req, res, body, type) {
+  const m = /bytes=(\d*)-(\d*)/.exec(req.headers.range || '');
+  if (!m) return res.writeHead(200, { 'content-type': type, 'accept-ranges': 'bytes', 'content-length': body.length }).end(body);
+  const start = Number(m[1] || 0);
+  const end = m[2] ? Number(m[2]) : body.length - 1;
+  return res
+    .writeHead(206, { 'content-type': type, 'accept-ranges': 'bytes', 'content-range': `bytes ${start}-${end}/${body.length}`, 'content-length': end - start + 1 })
+    .end(body.subarray(start, end + 1));
+}
+const portrait = readFileSync(fileURLToPath(new URL('./fixtures/portrait.webm', import.meta.url)));
+
 const playerServer = http.createServer((req, res) => {
   const url = new URL(req.url, PLAYER_ORIGIN);
   if (url.pathname === '/ui.js') return res.writeHead(200, { 'content-type': 'text/javascript' }).end(ui);
-  if (url.pathname === '/a.wav') {
-    // Chromium only allows seeking when the server honours Range requests.
-    const m = /bytes=(\d*)-(\d*)/.exec(req.headers.range || '');
-    if (!m) return res.writeHead(200, { 'content-type': 'audio/wav', 'accept-ranges': 'bytes', 'content-length': audio.length }).end(audio);
-    const start = Number(m[1] || 0);
-    const end = m[2] ? Number(m[2]) : audio.length - 1;
-    return res
-      .writeHead(206, { 'content-type': 'audio/wav', 'accept-ranges': 'bytes', 'content-range': `bytes ${start}-${end}/${audio.length}`, 'content-length': end - start + 1 })
-      .end(audio.subarray(start, end + 1));
-  }
+  if (url.pathname === '/a.wav') return ranged(req, res, audio, 'audio/wav');
+  if (url.pathname === '/portrait.webm') return ranged(req, res, portrait, 'video/webm');
   if (url.pathname === '/example') return res.writeHead(200, { 'content-type': 'text/html' }).end(example);
   if (url.pathname === '/player') {
     const theme = url.searchParams.get('theme') || 'dark';
@@ -176,6 +180,88 @@ try {
   await foreign.waitForTimeout(300);
   assert.equal(await foreign.locator('.pf-root').count(), 0);
   console.log('ok  examples/player.html mounts, and refuses media from other origins');
+
+  // 11. a portrait video gets a portrait box, capped so the controls stay on screen
+  const clip = await browser.newPage({ viewport: { width: 390, height: 800 } });
+  await clip.goto(`${PLAYER_ORIGIN}/player?src=/a.wav`);
+  await clip.locator('.pf-root').waitFor();
+  await clip.evaluate(() => {
+    const host = document.createElement('div');
+    host.id = 'portrait';
+    document.body.appendChild(host);
+    PlayfoldUI.mountPlayer(host, { src: '/portrait.webm', title: 'Portrait', host: false, preload: 'auto' });
+  });
+  await clip.waitForFunction(() => document.querySelector('#portrait .pf-screen')?.style.getPropertyValue('--pf-ratio'));
+  const box = await clip.locator('#portrait .pf-screen').boundingBox();
+  assert.ok(Math.abs(box.width / box.height - 0.5625) < 0.02, `portrait box ${box.width}x${box.height}`);
+  assert.ok(box.height <= 800 * 0.7 + 1, `box height ${box.height} should be capped at 70vh`);
+  console.log(`ok  portrait video gets a ${Math.round(box.width)}x${Math.round(box.height)} box (9:16, capped at 70% of the screen)`);
+
+  // 12. icon and label colors stay readable on any accent, in both themes
+  const luminance = ([r, g, b]) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+  const lin = (v) => { const c = v / 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+  const ratio = (a, b) => { const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x); return (hi + 0.05) / (lo + 0.05); };
+  const rgb = (css) => css.match(/[\d.]+/g).slice(0, 3).map(Number);
+  for (const theme of ['dark', 'light']) {
+    for (const accent of ['#1e3a8a', '#00ff00', '#f1f5f9', '#f97316', '#111111']) {
+      const seen = await clip.evaluate(({ accent, theme }) => {
+        const host = document.createElement('div');
+        document.body.appendChild(host);
+        const p = PlayfoldUI.mountPlayer(host, { src: '/a.wav', title: 't', eyebrow: 'Label', accent, theme, host: false });
+        const cs = (el, prop) => getComputedStyle(el)[prop];
+        const out = {
+          label: cs(p.element.querySelector('.pf-eyebrow'), 'color'),
+          card: cs(p.element, 'backgroundColor'),
+          icon: cs(p.element.querySelector('.pf-play'), 'color'),
+          button: cs(p.element.querySelector('.pf-play'), 'backgroundColor'),
+        };
+        p.destroy();
+        host.remove();
+        return out;
+      }, { accent, theme });
+      const label = ratio(rgb(seen.label), rgb(seen.card));
+      const icon = ratio(rgb(seen.icon), rgb(seen.button));
+      assert.ok(label >= 4.5, `${theme} ${accent}: label contrast ${label.toFixed(2)}`);
+      assert.ok(icon >= 4.5, `${theme} ${accent}: play icon contrast ${icon.toFixed(2)}`);
+    }
+  }
+  console.log('ok  label and play icon reach 4.5:1 contrast on 5 accents in dark and light');
+
+  // 13. aggressive global CSS on the host page does not change the controls
+  const hostile = await browser.newPage({ viewport: { width: 390, height: 500 } });
+  await hostile.goto(`${PLAYER_ORIGIN}/player?src=/a.wav`);
+  await hostile.locator('.pf-root').waitFor();
+  const styled = await hostile.evaluate(() => {
+    const style = document.createElement('style');
+    style.textContent = 'button{border:3px solid red;padding:20px;margin:10px;border-radius:0;background:blue}input{border:3px solid red;padding:20px;margin:10px;height:60px}p{font-size:30px;margin:30px}';
+    document.head.appendChild(style);
+    const get = (sel, prop) => getComputedStyle(document.querySelector(sel))[prop];
+    return [get('.pf-play', 'borderTopWidth'), get('.pf-play', 'paddingTop'), get('.pf-play', 'width'), get('.pf-seek', 'borderTopWidth'), get('.pf-seek', 'paddingTop'), get('.pf-seek', 'height'), get('.pf-sub', 'fontSize')];
+  });
+  assert.deepEqual(styled, ['0px', '0px', '44px', '0px', '0px', '24px', '15px']);
+  console.log('ok  global button, input and p styles on the host page do not leak into the player');
+
+  // 14. colors that are not colors are ignored, so a link cannot make the player load anything
+  const evil = await browser.newPage({ viewport: { width: 390, height: 300 } });
+  const requested = [];
+  evil.on('request', (r) => { if (r.url().includes('evil.test')) requested.push(r.url()); });
+  await evil.goto(`${PLAYER_ORIGIN}/player?src=/a.wav`);
+  await evil.locator('.pf-root').waitFor();
+  const inline = await evil.evaluate(() => {
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+    const p = PlayfoldUI.mountPlayer(host, {
+      src: '/a.wav',
+      accent: 'url(https://evil.test/a.png)',
+      colors: { background: 'url(https://evil.test/b.png)', text: 'red; background: url(https://evil.test/c.png)' },
+      host: false,
+    });
+    return p.element.getAttribute('style') || '';
+  });
+  await evil.waitForTimeout(300);
+  assert.ok(!inline.includes('url('), `inline style: ${inline}`);
+  assert.deepEqual(requested, []);
+  console.log('ok  invalid color values are ignored and trigger no network request');
 
   // screenshot in the light theme at a narrow width
   const light = await browser.newPage({ viewport: { width: 320, height: 170 } });

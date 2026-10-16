@@ -38,6 +38,18 @@ describe('readParams', () => {
     expect(readParams('?autoplay=1&loop=true').loop).toBe(true);
     expect(readParams('?autoplay=0').autoplay).toBeUndefined();
   });
+  it('adds the # to bare hex colors and reads bg and fg', () => {
+    const p = readParams('?accent=f97316&bg=0b1020&fg=%23ffffff');
+    expect(p.accent).toBe('#f97316');
+    expect(p.colors).toEqual({ background: '#0b1020', text: '#ffffff' });
+  });
+  it('leaves named and functional colors alone', () => {
+    expect(readParams('?accent=hotpink').accent).toBe('hotpink');
+    expect(readParams('?accent=rgb(0,255,0)').accent).toBe('rgb(0,255,0)');
+  });
+  it('omits colors when none are given', () => {
+    expect(readParams('?src=x').colors).toBeUndefined();
+  });
   it('ignores unknown keys and empty values', () => {
     expect(readParams('?src=&foo=bar')).toEqual({});
   });
