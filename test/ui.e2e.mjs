@@ -263,6 +263,62 @@ try {
   assert.deepEqual(requested, []);
   console.log('ok  invalid color values are ignored and trigger no network request');
 
+  // 15-17. full screen: the browser feature when it works, the in-page fallback when it does not
+  const mountVideo = async (page) => {
+    await page.goto(`${PLAYER_ORIGIN}/player?src=/a.wav`);
+    await page.locator('.pf-root').waitFor();
+    await page.evaluate(() => {
+      const host = document.createElement('div');
+      host.id = 'vid';
+      document.body.appendChild(host);
+      window.vp = PlayfoldUI.mountPlayer(host, { src: '/portrait.webm', title: 'Clip', host: false, preload: 'auto' });
+    });
+    await page.locator('#vid .pf-root').waitFor();
+  };
+  const overflow = (page) => page.evaluate(() => document.documentElement.style.overflow);
+
+  // 15. a WebView with no full screen support still gets a working button
+  const webview = await browser.newPage({ viewport: { width: 390, height: 800 } });
+  await webview.addInitScript(() => {
+    Object.defineProperty(document, 'fullscreenEnabled', { value: false });
+    Element.prototype.requestFullscreen = undefined;
+  });
+  await mountVideo(webview);
+  await webview.locator('#vid button[aria-label="Full screen"]').click();
+  await webview.locator('#vid .pf-root[data-fullscreen]').waitFor();
+  const fill = await webview.locator('#vid .pf-root').boundingBox();
+  assert.ok(Math.abs(fill.width - 390) <= 1 && Math.abs(fill.height - 800) <= 1, `fallback box ${fill.width}x${fill.height}`);
+  assert.equal(await overflow(webview), 'hidden');
+  await webview.locator('#vid button[aria-label="Exit full screen"]').waitFor();
+  await webview.keyboard.press('Escape');
+  await webview.locator('#vid .pf-root:not([data-fullscreen])').waitFor();
+  assert.equal(await overflow(webview), '');
+  await webview.locator('#vid button[aria-label="Full screen"]').click();
+  await webview.locator('#vid .pf-root[data-fullscreen]').waitFor();
+  await webview.evaluate(() => window.vp.destroy());
+  assert.equal(await overflow(webview), '', 'destroy() must restore page scrolling');
+  console.log('ok  without browser full screen the button fills the page, Escape and destroy() restore it');
+
+  // 16. a refused request (for example an iframe without allowfullscreen) falls back too
+  const refusedFs = await browser.newPage({ viewport: { width: 390, height: 800 } });
+  await refusedFs.addInitScript(() => {
+    Element.prototype.requestFullscreen = () => Promise.reject(new Error('denied'));
+  });
+  await mountVideo(refusedFs);
+  await refusedFs.locator('#vid button[aria-label="Full screen"]').click();
+  await refusedFs.locator('#vid .pf-root[data-fullscreen]').waitFor();
+  console.log('ok  a refused full screen request falls back to filling the page');
+
+  // 17. the real browser full screen is used when it is available
+  const real = await browser.newPage({ viewport: { width: 390, height: 800 } });
+  await mountVideo(real);
+  await real.locator('#vid button[aria-label="Full screen"]').click();
+  await real.waitForFunction(() => document.fullscreenElement === document.querySelector('#vid .pf-root'));
+  assert.equal(await real.locator('#vid .pf-root[data-fullscreen]').count(), 0, 'must not also use the fallback');
+  await real.locator('#vid button[aria-label="Exit full screen"]').click();
+  await real.waitForFunction(() => document.fullscreenElement === null);
+  console.log('ok  real browser full screen is used when available, and exits cleanly');
+
   // screenshot in the light theme at a narrow width
   const light = await browser.newPage({ viewport: { width: 320, height: 170 } });
   await light.goto(`${PLAYER_ORIGIN}/player?theme=light`);
