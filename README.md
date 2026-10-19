@@ -305,7 +305,7 @@ mountPlayer('#app', {
 For a page without a bundler, load the script and call `PlayfoldUI.mountPlayer(...)`:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@boy-offi9-inc/playfold@1.2.2/dist/playfold-ui.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@boy-offi9-inc/playfold@1.2.3/dist/playfold-ui.global.js"></script>
 ```
 
  `examples/player.html` is a complete player page that reads `?src=&title=&theme=` from its URL. It only accepts media from its own origin until you add your media host to `MEDIA_ORIGINS`.
@@ -328,6 +328,8 @@ You only need to give the colors you care about. The play-button icon, the small
 You can also set `--pf-bg`, `--pf-fg`, `--pf-muted`, `--pf-track`, `--pf-radius`, `--pf-font` and `--pf-max-h` (the tallest a video may be, default `70vh`) on `.pf-root` from your own stylesheet. All text can be translated with the `labels` option.
 
 **Video.** The video box follows the real picture, so a portrait clip is shown tall instead of with black bars, up to `--pf-max-h`. When the player sits in an iframe, make the iframe tall enough for a portrait video plus the controls. The controls are built to ignore global `button` and `input` styles on the page.
+
+**Full screen.** The full-screen button uses the browser's own full screen when it has one. In in-app browsers and WebViews that have none, or when the browser refuses (for example an iframe without the `allowfullscreen` attribute), the player fills the page instead. The button or Escape exits, and page scrolling is restored. Inside an iframe, that fallback can only fill the iframe, so give the iframe enough room or add `allowfullscreen`.
 
 **Security.**
 - If you read `src` or `poster` from the URL, set `allowedSrcOrigins`. Otherwise anyone can use your player page to play any file.
