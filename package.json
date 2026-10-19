@@ -1,6 +1,6 @@
 {
   "name": "@boy-offi9-inc/playfold",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Tiny, framework-agnostic SDK for embedding media players in an iframe and controlling them through a typed, promise-based API. Includes server-side link-preview helpers (Open Graph, Twitter, oEmbed) and a crawler checker.",
   "keywords": [
     "embed",
