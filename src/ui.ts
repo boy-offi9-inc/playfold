@@ -129,6 +129,8 @@ export const playerCss = `
 .pf-root[data-loading] .pf-play svg{opacity:.55}
 .pf-root:fullscreen{display:flex;flex-direction:column;justify-content:center;border-radius:0}
 .pf-root:fullscreen .pf-screen{flex:1;width:100%;aspect-ratio:auto;margin:0 0 12px;border-radius:0}
+.pf-root[data-fullscreen]{position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;justify-content:center;width:100%;height:100%;overflow:auto;border-radius:0;padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+.pf-root[data-fullscreen] .pf-screen{flex:1;min-height:0;width:100%;aspect-ratio:auto;margin:0 0 12px;border-radius:0}
 @media (prefers-reduced-motion:no-preference){.pf-root button.pf-btn{transition:background-color .15s,filter .15s}}
 `;
 
@@ -379,7 +381,7 @@ export function mountPlayer(target: HTMLElement | string, options: PlayerUIOptio
 
   let fullscreen: HTMLButtonElement | undefined;
   const nativeFullscreen = isVideo && typeof (media as FullscreenMedia).webkitEnterFullscreen === 'function';
-  if (isVideo && (document.fullscreenEnabled || nativeFullscreen)) {
+  if (isVideo) {
     fullscreen = el('button', 'pf-btn');
     fullscreen.type = 'button';
     controls.appendChild(fullscreen);
@@ -425,11 +427,29 @@ export function mountPlayer(target: HTMLElement | string, options: PlayerUIOptio
     mute.setAttribute('aria-label', silent ? labels.unmute : labels.mute);
   };
 
+  // Some in-app browsers and WebViews offer no full screen at all. There the player fills the page instead.
+  let pseudo = false;
+  let savedOverflow = '';
+
   const syncFullscreen = (): void => {
     if (!fullscreen) return;
-    const active = document.fullscreenElement === root;
+    const active = pseudo || document.fullscreenElement === root;
     setIcon(fullscreen, active ? 'exit' : 'enter');
     fullscreen.setAttribute('aria-label', active ? labels.exitFullscreen : labels.fullscreen);
+  };
+
+  const setPseudo = (on: boolean): void => {
+    if (on === pseudo) return;
+    pseudo = on;
+    if (on) {
+      root.dataset.fullscreen = '';
+      savedOverflow = document.documentElement.style.overflow;
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      delete root.dataset.fullscreen;
+      document.documentElement.style.overflow = savedOverflow;
+    }
+    syncFullscreen();
   };
 
   function toggle(): void {
@@ -449,10 +469,17 @@ export function mountPlayer(target: HTMLElement | string, options: PlayerUIOptio
   if (fullscreen) {
     on(fullscreen, 'click', () => {
       if (document.fullscreenElement === root) void document.exitFullscreen();
-      else if (document.fullscreenEnabled) void root.requestFullscreen().catch(() => undefined);
-      else (media as FullscreenMedia).webkitEnterFullscreen?.();
+      else if (pseudo) setPseudo(false);
+      else if (document.fullscreenEnabled && typeof root.requestFullscreen === 'function') {
+        // Refused, for example by an iframe without the allowfullscreen attribute: fill the page instead.
+        root.requestFullscreen().catch(() => setPseudo(true));
+      } else if (nativeFullscreen) (media as FullscreenMedia).webkitEnterFullscreen?.();
+      else setPseudo(true);
     });
     on(document, 'fullscreenchange', syncFullscreen);
+    on(document, 'keydown', (event) => {
+      if ((event as KeyboardEvent).key === 'Escape') setPseudo(false);
+    });
   }
 
   on(seek, 'input', () => {
@@ -576,6 +603,7 @@ export function mountPlayer(target: HTMLElement | string, options: PlayerUIOptio
     element: root,
     media,
     destroy() {
+      setPseudo(false);
       ac.abort();
       connection?.destroy();
       if (session) {
