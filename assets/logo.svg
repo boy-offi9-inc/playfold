@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Playfold">
+<title>Playfold</title>
+<g transform="translate(0 0) scale(1.00000)">
+  <defs>
+    <linearGradient id="pf-tile-m" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fdba74"/><stop offset=".45" stop-color="#f97316"/><stop offset="1" stop-color="#ea580c"/>
+    </linearGradient>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="124" fill="url(#pf-tile-m)"/>
+  <g stroke-linejoin="round" stroke-width="26">
+    <path d="M208 152 L372 256 L208 256 Z" fill="#ffffff" stroke="#ffffff"/>
+    <path d="M208 256 L372 256 L208 360 Z" fill="#ffd8b5" stroke="#ffd8b5"/>
+  </g>
+  <path d="M200 256 H372" stroke="#9a3412" stroke-opacity=".22" stroke-width="4" stroke-linecap="round"/>
+</g>
+</svg>

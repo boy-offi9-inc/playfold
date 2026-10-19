@@ -1,10 +1,20 @@
-<h1 align="center">Playfold</h1>
+<h1 align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-wordmark-dark.svg">
+    <img src="assets/logo-wordmark-light.svg" alt="Playfold" width="360">
+  </picture>
+</h1>
 <p align="center">
-  <a href="https://www.npmjs.com/package/@boy-offi9-inc/playfold"><img src="https://img.shields.io/npm/v/%40boy-offi9-inc%2Fplayfold?style=flat-square&label=npm" alt="npm version"></a>
-  <a href="https://github.com/boy-offi9-inc/playfold/actions"><img src="https://img.shields.io/github/actions/workflow/status/boy-offi9-inc/playfold/ci.yml?style=flat-square&label=CI" alt="CI"></a>
-  <img src="https://img.shields.io/badge/dependencies-0-44cc11?style=flat-square" alt="Zero dependencies">
-  <img src="https://img.shields.io/badge/TypeScript-ready-3178C6?style=flat-square" alt="TypeScript">
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/boy-offi9-inc/playfold?style=flat-square" alt="MIT License"></a>
+  <a href="https://www.npmjs.com/package/@boy-offi9-inc/playfold"><img src="https://img.shields.io/npm/v/%40boy-offi9-inc%2Fplayfold?style=for-the-badge&label=npm&color=f97316&labelColor=0b1020" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/@boy-offi9-inc/playfold"><img src="https://img.shields.io/npm/dm/%40boy-offi9-inc%2Fplayfold?style=for-the-badge&label=downloads&color=f97316&labelColor=0b1020" alt="npm downloads per month"></a>
+  <a href="https://github.com/boy-offi9-inc/Playfold/actions"><img src="https://img.shields.io/github/actions/workflow/status/boy-offi9-inc/Playfold/ci.yml?branch=main&style=for-the-badge&label=CI&labelColor=0b1020" alt="CI status"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/boy-offi9-inc/Playfold?style=for-the-badge&color=f97316&labelColor=0b1020" alt="MIT License"></a>
+</p>
+<p align="center">
+  <img src="https://img.shields.io/badge/TypeScript-ready-3178C6?style=for-the-badge&logo=typescript&logoColor=white&labelColor=0b1020" alt="TypeScript">
+  <img src="https://img.shields.io/badge/dependencies-0-22c55e?style=for-the-badge&labelColor=0b1020" alt="Zero dependencies">
+  <img src="https://img.shields.io/badge/modules-ESM%20%2B%20CJS-f97316?style=for-the-badge&labelColor=0b1020" alt="ESM and CJS">
+  <img src="https://img.shields.io/badge/link%20previews-Open%20Graph%20%2B%20oEmbed-f97316?style=for-the-badge&labelColor=0b1020" alt="Open Graph and oEmbed link previews">
 </p>
 <p align="center">
   <strong>Tiny media embeds. Simple control.</strong><br>
